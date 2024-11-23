@@ -14,20 +14,28 @@ import { InputNumber } from "primereact/inputnumber";
 function Productos() {
   //const navigate = useNavigate();
   const options = [
-    { label: "Activo", value: "true" },
-    { label: "Inactivo", value: "false" },
+    { label: "Activo", value: 1 },
+    { label: "Inactivo", value: 0 },
   ];
   const [activo, setActivo] = useState(options[0]);
-  const [displayDialog, setDisplayDialog] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [marca, setMarca] = useState([]);
-  const [descripcion, setDescripcion] = useState([]);
-  const [valorUnidad, setValorUnidad] = useState([]);
-  const [stock, setStock] = useState([]);
+  const [displayCreateDialog, setDisplayCreateDialog] = useState(false);
+  const [displayEditDialog, setDisplayEditDialog] = useState(false);
+  //const [products, setProducts] = useState([]);
+  const [marca, setMarca] = useState();
+  const [descripcion, setDescripcion] = useState();
+  const [valorUnidad, setValorUnidad] = useState();
+  const [stock, setStock] = useState();
 
-  const fetchProducts = async () => {
+  const products = [
+    { id: 1, marca: "Ilolay", descripcion: "Leche", valorUnidad: 900, stock: 200, activo: 1 },
+    { id: 2, marca: "Ilolay", descripcion: "Leche", valorUnidad: 900, stock: 200, activo: 1 },
+    { id: 3, marca: "Ilolay", descripcion: "Leche", valorUnidad: 900, stock: 200, activo: 1 },
+    { id: 4, marca: "Ilolay", descripcion: "Leche", valorUnidad: 900, stock: 200, activo: 1 },
+  ];
+
+  const getProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:4250/productos", {});
+      const response = await axios.get("http://localhost:3000/products", {});
       setProducts(response.data);
     } catch (error) {
       console.error(error);
@@ -40,7 +48,7 @@ function Productos() {
       console.log(marca, descripcion, valorUnidad, stock, activo);
 
       try {
-        const response = await axios.post("http://localhost:4250/productos", {
+        const response = await axios.post("http://localhost:3000/products", {
           marca: marca,
           descripcion: descripcion,
           valorUnidad: valorUnidad,
@@ -56,8 +64,45 @@ function Productos() {
     }
   };
 
+  const eliminarProducto = async (id) => {
+    console.log(id);
+    if (marca && descripcion && valorUnidad && stock && activo) {
+      try {
+        const response = await axios.put(`http://localhost:3000/product/delete/:${id}`, {
+          marca: marca,
+          descripcion: descripcion,
+          valorUnidad: valorUnidad,
+          stock: stock,
+          activo: activo,
+        });
+        console.log(response)
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const editarProducto = async (id) => {
+    console.log(id);
+    if (marca && descripcion && valorUnidad && stock && activo) {
+      try {
+        const response = await axios.put(`http://localhost:3000/product/update/:${id}`, {
+          marca: marca,
+          descripcion: descripcion,
+          valorUnidad: valorUnidad,
+          stock: stock,
+          activo: activo,
+        });
+        console.log(response)
+        setDisplayEditDialog(false)
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
   useEffect(() => {
-    fetchProducts();
+    getProducts();
   }, []);
 
   return (
@@ -76,7 +121,7 @@ function Productos() {
                 className="bg-orange-500 text-white border-none hover:cursor-pointer hover:bg-orange-400"
                 label="Cargar Producto"
                 icon="pi pi-plus"
-                onClick={() => setDisplayDialog(true)}
+                onClick={() => setDisplayCreateDialog(true)}
               />
             </div>
           </div>
@@ -88,11 +133,20 @@ function Productos() {
               <Column field="valorUnidad" header="Valor Unidad" />
               <Column field="stock" header="Stock" />
               <Column field="activo" header="Activo" />
+              <Column
+                header="Acciones"
+                body={(rowData) => (
+                  <Button icon="pi pi-times" rounded text severity="danger" aria-label="Eliminar" onClick={editarProducto(rowData.id)} />,
+                  <Button icon="pi pi-times" rounded text severity="danger" aria-label="Eliminar" onClick={eliminarProducto(rowData.id)} />
+                )}
+              />
             </DataTable>
           </Card>
         </div>
       </div>
-      <Dialog className="w-4" header="Cargar Producto" draggable={false} visible={displayDialog} onHide={() => setDisplayDialog(false)}>
+
+      {/* Dialog Para Cargar Productos */}
+      <Dialog className="w-4" header="Cargar Producto" draggable={false} visible={displayCreateDialog} onHide={() => setDisplayCreateDialog(false)}>
         <div className="flex flex-column align-items-center w-full gap-3">
           <InputText className="w-full" value={marca} onChange={(e) => setMarca(e.target.value)} placeholder="Marca" />
           <InputText className="w-full" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Descripción" />
@@ -112,11 +166,42 @@ function Productos() {
             }}
             placeholder="Stock"
           />
-          <SelectButton className="w-full" value={activo} onChange={(e) => setActivo(e.value)} options={options} placeholder="Estado" />
+          <SelectButton className="w-full" value={activo} onChange={(e) => setActivo(e.value)} options={options} />
 
           <div className="flex w-full justify-end">
             <div className="w-full flex justify-content-end">
               <Button label="Guardar" className="bg-green-500 border-0 hover:bg-green-600" icon="pi pi-check" onClick={cargarProducto} />
+            </div>
+          </div>
+        </div>
+      </Dialog>
+
+      {/* Dialog Para Editar Productos */}
+      <Dialog className="w-4" header="Editar Producto" draggable={false} visible={displayEditDialog} onHide={() => setDisplayEditDialog(false)}>
+        <div className="flex flex-column align-items-center w-full gap-3">
+          <InputText className="w-full" value={marca} onChange={(e) => setMarca(e.target.value)} placeholder="Marca" />
+          <InputText className="w-full" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Descripción" />
+          <InputNumber
+            className="w-full"
+            value={valorUnidad}
+            onChange={(e) => {
+              setValorUnidad(e.value);
+            }}
+            placeholder="Valor por Unidad"
+          />
+          <InputNumber
+            className="w-full"
+            value={stock}
+            onChange={(e) => {
+              setStock(e.value);
+            }}
+            placeholder="Stock"
+          />
+          <SelectButton className="w-full" value={activo} onChange={(e) => setActivo(e.value)} options={options} />
+
+          <div className="flex w-full justify-end">
+            <div className="w-full flex justify-content-end">
+              <Button label="Guardar" className="bg-green-500 border-0 hover:bg-green-600" icon="pi pi-check" onClick={editarProducto} />
             </div>
           </div>
         </div>
