@@ -14,23 +14,23 @@ function Navbar() {
   
     const startContent = (
       <React.Fragment>
-        <span className="text-white font-bold text-2xl ml-2">Gestiona tus Productos</span>
+        <span className="text-white font-bold text-2xl ml-2">Gestioná tus Productos</span>
       </React.Fragment>
     );
   
     const endContent = (
       <React.Fragment>
-        <Button
+        {/* <Button
           label="Productos"
           icon="pi pi-box"
           className="mr-2 bg-orange-600 text-white border-none hover:cursor-pointer hover:bg-orange-400"
           onClick={() => navegar("")}
-        />
+        /> */}
         <Button
-          label="Usuario"
-          icon="pi pi-user"
+          label="Salir"
+          icon="pi pi-sign-out"
           className="mr-2 bg-orange-600 text-white border-none hover:cursor-pointer hover:bg-orange-400"
-          onClick={() => navegar("user")}
+          onClick={() => navegar("")}
         />
       </React.Fragment>
     );
