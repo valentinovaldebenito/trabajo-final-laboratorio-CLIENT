@@ -21,18 +21,12 @@ function Productos() {
   const [displayEditDialog, setDisplayEditDialog] = useState(false);
   const [products, setProducts] = useState([]);
   const [itemEdit, setItemEdit] = useState({});
+  const [itemEditId, setItemEditId] = useState();
   const [activo, setActivo] = useState(options[0]);
   const [marca, setMarca] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [valorUnidad, setValorUnidad] = useState(0);
   const [stock, setStock] = useState(0);
-
-  const productsMuestra = [
-    { id: 1, marca: "Ilolay", descripcion: "Leche", valorUnidad: 900, stock: 100, activo: 1 },
-    { id: 2, marca: "La Serenisima", descripcion: "Leche", valorUnidad: 600, stock: 300, activo: 1 },
-    { id: 3, marca: "Sancor", descripcion: "Leche", valorUnidad: 500, stock: 400, activo: 1 },
-    { id: 4, marca: "Las tres hermanas", descripcion: "Leche", valorUnidad: 700, stock: 230, activo: 1 },
-  ];
 
   const getProducts = async () => {
     try {
@@ -67,16 +61,22 @@ function Productos() {
 
   //Delete
   const eliminarProducto = async (id) => {
-    console.log(id);
-    if (marca && descripcion && valorUnidad && stock && activo) {
+    console.log(id)
+    if(id){
       try {
-        const response = await axios.put(`http://localhost:3000/product/delete/:${id}`, {
-          marca: marca,
-          descripcion: descripcion,
-          valorUnidad: valorUnidad,
-          stock: stock,
-          activo: activo,
-        });
+        const response = await axios.put(`http://localhost:3000/product/delete/${id}`);
+        console.log(response);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const activarProducto = async (id) => {
+    console.log(id)
+    if(id){
+      try {
+        const response = await axios.put(`http://localhost:3000/product/activate/${id}`);
         console.log(response);
       } catch (error) {
         console.error(error);
@@ -88,14 +88,13 @@ function Productos() {
   const editarProducto = async () => {
     if (itemEdit) {
       try {
-        const response = await axios.put(`http://localhost:3000/product/update/:${itemEdit.id}`, {
+        const response = await axios.put(`http://localhost:3000/product/update/${itemEditId}`, {
           marca: marca,
           descripcion: descripcion,
           valorUnidad: valorUnidad,
           stock: stock,
           activo: 1,
         });
-        console.log(response)
         setItemEdit({});
         setDisplayEditDialog(false);
       } catch (error) {
@@ -107,13 +106,16 @@ function Productos() {
   };
 
   const handleEditClick = (rowData) => {
+    console.log(rowData.id);
     setItemEdit(rowData);
+    setItemEditId(rowData.id);
     setMarca(rowData.marca);
     setDescripcion(rowData.descripcion);
     setValorUnidad(rowData.valorUnidad);
     setStock(rowData.stock);
-
-    setDisplayEditDialog(true);
+    setTimeout(() => {
+      setDisplayEditDialog(true);
+    }, 500);
   };
 
   useEffect(() => {
@@ -141,7 +143,7 @@ function Productos() {
             </div>
           </div>
           <Card className="flex flex-column w-10 overflow-x-hidden overflow-y-hidden">
-            <DataTable value={products || productsMuestra} className="w-full">
+            <DataTable value={products} className="w-full">
               <Column field="id" header="Id" />
               <Column field="marca" header="Marca" />
               <Column field="descripcion" header="Descripción" />
@@ -157,7 +159,7 @@ function Productos() {
                     text
                     severity="primary"
                     aria-label="Editar"
-                    onClick={() => handleEditClick(rowData)}
+                    onClick={() => handleEditClick(rowData, rowData.id)}
                   />
                 )}
               />
@@ -171,6 +173,19 @@ function Productos() {
                     severity="danger"
                     aria-label="Eliminar"
                     onClick={() => eliminarProducto(rowData.id)}
+                  />
+                )}
+              />
+              <Column
+                body={(rowData) => (
+                  <Button
+                    key={rowData.id}
+                    icon="pi pi-check"
+                    rounded
+                    text
+                    severity="success"
+                    aria-label="Activar"
+                    onClick={() => activarProducto(rowData.id)}
                   />
                 )}
               />
@@ -215,7 +230,7 @@ function Productos() {
         <div className="flex flex-column align-items-center w-full gap-3">
           <div className="flex flex-column w-full">
             <span className="font-semibold mb-2 ml-2">ID Producto</span>
-            <InputText className="w-full" value={"ID Producto: " + itemEdit?.id || null} disabled={true} name="ID" />
+            <InputText className="w-full" value={"ID Producto: " + itemEditId} disabled={true} name="ID" />
           </div>
           <div className="flex flex-column w-full">
             <span className="font-semibold mb-2 ml-2">Marca</span>
