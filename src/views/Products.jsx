@@ -20,12 +20,12 @@ function Productos() {
   const [displayCreateDialog, setDisplayCreateDialog] = useState(false);
   const [displayEditDialog, setDisplayEditDialog] = useState(false);
   const [products, setProducts] = useState([]);
-  const [itemEdit, setItemEdit] = useState();
+  const [itemEdit, setItemEdit] = useState({});
   const [activo, setActivo] = useState(options[0]);
-  const [marca, setMarca] = useState();
-  const [descripcion, setDescripcion] = useState();
-  const [valorUnidad, setValorUnidad] = useState();
-  const [stock, setStock] = useState();
+  const [marca, setMarca] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [valorUnidad, setValorUnidad] = useState(0);
+  const [stock, setStock] = useState(0);
 
   const productsMuestra = [
     { id: 1, marca: "Ilolay", descripcion: "Leche", valorUnidad: 900, stock: 100, activo: 1 },
