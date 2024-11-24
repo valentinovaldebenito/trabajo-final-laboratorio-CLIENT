@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
 import Products from '../views/Products';
-import User from '../views/User'
+import Welcome from '../views/Welcome';
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Products />} />
-      <Route path="/user" element={<User />} />
+      <Route path="/products" element={<Products />} />
+      <Route path="/" element={<Welcome />} />
     </Routes>
   );
 }
