@@ -141,7 +141,7 @@ function Productos() {
             </div>
           </div>
           <Card className="flex flex-column w-10 overflow-x-hidden overflow-y-hidden">
-            <DataTable value={productsMuestra} className="w-full">
+            <DataTable value={products || productsMuestra} className="w-full">
               <Column field="id" header="Id" />
               <Column field="marca" header="Marca" />
               <Column field="descripcion" header="Descripción" />
