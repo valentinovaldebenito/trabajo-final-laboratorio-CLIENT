@@ -50,7 +50,9 @@ function Productos() {
           stock: stock,
           activo: activo,
         });
-        console.log(response);
+        resetValues()
+        setDisplayCreateDialog(false);
+        getProducts();
       } catch (error) {
         console.log(error);
       }
@@ -61,10 +63,11 @@ function Productos() {
 
   //Delete
   const eliminarProducto = async (id) => {
-    console.log(id)
-    if(id){
+    console.log(id);
+    if (id) {
       try {
         const response = await axios.put(`http://localhost:3000/product/delete/${id}`);
+        getProducts();
         console.log(response);
       } catch (error) {
         console.error(error);
@@ -72,12 +75,14 @@ function Productos() {
     }
   };
 
+  //Activate Product
   const activarProducto = async (id) => {
-    console.log(id)
-    if(id){
+    console.log(id);
+    if (id) {
       try {
         const response = await axios.put(`http://localhost:3000/product/activate/${id}`);
         console.log(response);
+        getProducts();
       } catch (error) {
         console.error(error);
       }
@@ -95,8 +100,9 @@ function Productos() {
           stock: stock,
           activo: 1,
         });
-        setItemEdit({});
+        resetValues()
         setDisplayEditDialog(false);
+        getProducts();
       } catch (error) {
         console.error(error);
       }
@@ -104,6 +110,16 @@ function Productos() {
       console.error("Error al obtener el ItemEdit");
     }
   };
+
+  //Reset all Values
+  const resetValues = () => {
+    setItemEdit({});
+    setItemEditId(null);
+    setMarca(null);
+    setDescripcion(null);
+    setValorUnidad(0);
+    setStock(0);
+  }
 
   const handleEditClick = (rowData) => {
     console.log(rowData.id);
@@ -124,7 +140,7 @@ function Productos() {
 
   return (
     <>
-      <div className="flex flex-column w-full h-screen surface-200">
+      <div className="flex flex-column w-full h-screen overflow-y-hidden bg-semiwhite pb-6">
         <div className="w-full">
           <Navbar />
         </div>
@@ -142,7 +158,7 @@ function Productos() {
               />
             </div>
           </div>
-          <Card className="flex flex-column w-10 overflow-x-hidden overflow-y-hidden">
+          <Card className="flex flex-column w-10 overflow-x-hidden overflow-y-scroll">
             <DataTable value={products} className="w-full">
               <Column field="id" header="Id" />
               <Column field="marca" header="Marca" />
@@ -197,29 +213,41 @@ function Productos() {
       {/* Dialog Para Cargar Productos */}
       <Dialog className="w-4" header="Cargar Producto" draggable={false} visible={displayCreateDialog} onHide={() => setDisplayCreateDialog(false)}>
         <div className="flex flex-column align-items-center w-full gap-3">
-          <InputText className="w-full" value={marca} onChange={(e) => setMarca(e.target.value)} placeholder="Marca" />
-          <InputText className="w-full" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Descripción" />
-          <InputNumber
-            className="w-full"
-            value={valorUnidad}
-            onChange={(e) => {
-              setValorUnidad(e.value);
-            }}
-            placeholder="Valor por Unidad"
-          />
-          <InputNumber
-            className="w-full"
-            value={stock}
-            onChange={(e) => {
-              setStock(e.value);
-            }}
-            placeholder="Stock"
-          />
+          <div className="flex flex-column w-full">
+            <span className="font-semibold mb-2 ml-2">Marca</span>
+            <InputText className="w-full" value={marca} onChange={(e) => setMarca(e.target.value)} placeholder="Marca" />
+          </div>
+          <div className="flex flex-column w-full">
+            <span className="font-semibold mb-2 ml-2">Descripción</span>
+            <InputText className="w-full" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Descripción" />
+          </div>
+          <div className="flex flex-column w-full">
+            <span className="font-semibold mb-2 ml-2">Precio Unitario</span>
+            <InputNumber
+              className="w-full"
+              value={valorUnidad}
+              onChange={(e) => {
+                setValorUnidad(e.value);
+              }}
+              placeholder="Valor por Unidad"
+            />
+          </div>
+          <div className="flex flex-column w-full">
+            <span className="font-semibold mb-2 ml-2">Cantidad Stock</span>
+            <InputNumber
+              className="w-full"
+              value={stock}
+              onChange={(e) => {
+                setStock(e.value);
+              }}
+              placeholder="Stock"
+            />
+          </div>
           <SelectButton className="w-full" value={activo} onChange={(e) => setActivo(e.value)} options={options} />
 
           <div className="flex w-full justify-end">
             <div className="w-full flex justify-content-end">
-              <Button label="Guardar" className="bg-green-500 border-0 hover:bg-green-600" icon="pi pi-check" onClick={cargarProducto} />
+              <Button label="Guardar" className="bg-dark-blue border-0" icon="pi pi-check" onClick={cargarProducto} />
             </div>
           </div>
         </div>
@@ -263,7 +291,7 @@ function Productos() {
 
           <div className="flex w-full justify-end">
             <div className="w-full flex justify-content-end">
-              <Button label="Guardar" className="bg-green-500 border-0 hover:bg-green-600" icon="pi pi-check" onClick={editarProducto} />
+              <Button label="Guardar" className="bg-dark-blue border-0" icon="pi pi-check" onClick={editarProducto} />
             </div>
           </div>
         </div>

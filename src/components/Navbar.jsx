@@ -29,7 +29,7 @@ function Navbar() {
         <Button
           label="Salir"
           icon="pi pi-sign-out"
-          className="mr-2 bg-orange-600 text-white border-none hover:cursor-pointer hover:bg-orange-400"
+          className="bg-dark-blue mr-2 text-white border-none hover:cursor-pointer"
           onClick={() => navegar("")}
         />
       </React.Fragment>
@@ -38,7 +38,7 @@ function Navbar() {
     return (
         <div className="w-full flex align-items-center m-0 p-0">
           <Toolbar
-            className="bg-orange-500 w-full h-auto flex align-items-center border-none border-noround m-0"
+            className="bg-darker-blue w-full h-auto flex align-items-center border-none border-noround m-0"
             start={startContent}
             end={endContent}
           ></Toolbar>
